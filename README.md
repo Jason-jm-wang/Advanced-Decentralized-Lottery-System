@@ -1,0 +1,143 @@
+# 进阶的区中心化彩票系统
+
+进阶的去中心化彩票系统，参与方包括：竞猜玩家、公证人
+
+## 项目背景
+传统的体育彩票系统（例如我国的体育彩票）一般没有彩票交易功能：例如，对于“NBA本赛季MVP为某球员/F1的赛季总冠军为某车队”这类持续时间长的事件的下注一般在赛季开始前就会买定离手，这使得一旦出现突发或不确定事件（如球员A赛季报销/球队B买入强力球星/C车队车手受伤等），很多玩家的选择便会立即失去意义，导致彩票游戏的可玩性下降。因此，一个有趣的探索方向是让彩票系统拥有合规、方便的交易功能。
+
+## 项目功能
+建立一个进阶的去中心化彩票系统（可以是体育彩票，或其它任何比赛节目的竞猜，例如《中国好声音》《我是歌手》年度总冠军等，在网站中：
+公证人（你自己）可以创立许多竞猜项目：例如某场比赛的输赢、年度总冠军的得主等，每个项目应当有2个或多个可能的选项，一定的彩票总金额（由公证人提供），以及规定好的结果公布时间。
+玩家首先领取到测试所需以太币。在网站中，对于一个竞猜项目和多个可能的选项：
+1. 每个竞彩玩家都可以选择其中的某个选项并购买一定金额（自己定义）的彩票，购买后该玩家会获得一张对应的彩票凭证（一个 ERC721 合约中的 Token）
+2. 在竞彩结果公布之前，任何玩家之间可以买卖他们的彩票，以应对项目进行期间的任何突发状况。具体的买卖机制如下：一个玩家可以以指定的金额挂单出售（ERC721 Delegate）自己的彩票，其它玩家如果觉得该彩票有利可图就可以买入他的彩票。双方完成一次 ERC721 Token 交易。
+3. 公证人可以在时间截止时（简单起见，你可以随时终止项目）输入竞猜的结果并进行结算。所有胜利的玩家可以平分奖池中的金额。
+
+## 功能实现分析
+
+### 1. 创建活动（Create Activity）
+
+- **功能描述**：允许合约所有者创建新的竞猜活动。
+- **实现方式**：
+  - 使用 `createActivity(string memory description, string[] memory choices, uint256 durationHours)` 函数。
+  - 校验选项数量至少为两个，设置活动开始和结束时间，初始化奖池和其他状态信息。
+  - 触发 `ActivityCreated` 事件记录活动详情。
+
+### 2. 购买彩票（Buy Ticket）
+
+- **功能描述**：用户可以对某个活动下的特定选项下注，获得对应的 NFT 票据。
+- **实现方式**：
+  - 使用 `buyTicket(uint256 activityId, uint256 choiceIndex)` 函数。
+  - 校验活动存在性、选项有效性、投注金额等条件后，生成唯一的 `tokenId` 并铸造 NFT 给买家。
+  - 更新活动的状态，包括增加对应选项的总投注金额和奖池总额。
+  - 触发 `BetPlaced` 事件记录投注详情。
+
+### 3. 结算活动（Resolve Activity）
+
+- **功能描述**：在活动结束后由合约所有者指定获胜选项。
+- **实现方式**：
+  - 使用 `resolveActivity(uint256 activityId, uint8 winningChoiceIndex)` 函数。
+  - 校验活动是否已经结束且未被结算过，然后更新活动的获胜选项索引和结算状态。
+  - 触发 `ActivityResolved` 事件通知活动已结算。
+
+### 4. 领取奖金（Claim Prize）
+
+- **功能描述**：持有胜出选项票据的用户可以按比例领取奖金。
+- **实现方式**：
+  - 使用 `claimPrize(uint256 activityId)` 函数。
+  - 用户遍历自己拥有的 NFT 票据，计算其在胜出选项上的总投注金额，并据此分配奖金。
+  - 触发 `PrizeClaimed` 事件记录领奖详情。
+
+### 5. 彩票二级市场交易（Marketplace）
+
+#### a) 挂单出售彩票
+
+- **功能描述**：持有者可将未开奖的彩票挂单出售。
+- **实现方式**：
+  - 使用 `listTicket(uint256 tokenId, uint256 price)` 函数。
+  - 校验彩票持有者身份及活动状态，记录挂单信息。
+  - 触发 `TicketListed` 事件记录挂单详情。
+
+#### b) 取消挂单
+
+- **功能描述**：卖家可以取消已挂出的彩票订单。
+- **实现方式**：
+  - 使用 `cancelListing(uint256 tokenId)` 函数。
+  - 校验卖家身份及订单状态，标记订单为无效。
+  - 触发 `ListingCancelled` 事件记录取消详情。
+
+#### c) 购买挂单彩票
+
+- **功能描述**：买家可以按照挂单价格购买彩票。
+- **实现方式**：
+  - 使用 `buyListedTicket(uint256 tokenId)` 函数。
+  - 校验支付金额与挂单价格的一致性，完成 NFT 的安全转移及 ETH 支付给卖家。
+  - 触发 `TicketSold` 事件记录交易详情。
+
+### 6. 信息查询接口（View Functions）
+
+- 提供多种公共函数供外部调用以获取活动或彩票的相关信息，如 `getTokenInfo`, `getActivityInfo`, 和 `decodeTokenId`。
+
+
+## 项目运行截图
+
+创建项目
+
+![image-20251108232033603](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232033603.png)
+
+购买彩票
+
+![image-20251108232202577](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232202577.png)
+
+可以设置价格挂单出售，也可以取消挂单
+
+![image-20251108232316948](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232316948.png)
+
+挂单会显示在购买彩票界面
+
+![image-20251108232358252](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232358252.png)
+
+合约拥有者可以开奖
+
+![image-20251108232442971](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232442971.png)
+
+选对了选项，开奖了可以领取奖金
+
+![image-20251108232548372](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232548372.png)
+
+直接通过metamask切换账号，切换后刷新即可
+
+![image-20251108232645836](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232645836.png)
+
+## 操作流程
+
+首先在先进入`contracts`目录，分别在两个终端输入以下两条命令
+
+```bash
+npx hardhat node
+npx hardhat run scripts/deploy.ts --network localhost
+```
+
+![image-20251108232956179](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108232956179.png)
+
+将第二条命令得到的address设置到frontend/src/contracts/addresses.ts
+
+![image-20251108233048099](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108233048099.png)
+
+将第一条命令得到的需要用到的地址设置到`MetaMask`当中，其中第一条地址是合约拥有者地址，设置网络为`localhost:8545`
+
+进入`frontend`文件夹，启动前端
+
+```bash
+npm start
+```
+
+![image-20251108233402429](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20251108233402429.png)
+
+界面每一个某块对应各自的功能，我直接把账户信息固定住了，方便查看
+
+如果是合约拥有者，拥有创建项目和开奖的权利
+
+在购买彩票界面可以直接购买或者购买被挂单的彩票
+
+在我的彩票界面可以设置价格挂单或者领取结算的奖金

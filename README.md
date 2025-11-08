@@ -83,31 +83,31 @@
 
 创建项目
 
-![image-20251108232033603](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232033603.png)
+![image-20251108232033603](.\images\image-20251108232033603.png)
 
 购买彩票
 
-![image-20251108232202577](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232202577.png)
+![image-20251108232202577](.\images\image-20251108232202577.png)
 
 可以设置价格挂单出售，也可以取消挂单
 
-![image-20251108232316948](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232316948.png)
+![image-20251108232316948](.\images\image-20251108232316948.png)
 
 挂单会显示在购买彩票界面
 
-![image-20251108232358252](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232358252.png)
+![image-20251108232358252](.\images\image-20251108232358252.png)
 
 合约拥有者可以开奖
 
-![image-20251108232442971](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232442971.png)
+![image-20251108232442971](.\images\image-20251108232442971.png)
 
 选对了选项，开奖了可以领取奖金
 
-![image-20251108232548372](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232548372.png)
+![image-20251108232548372](.\images\image-20251108232548372.png)
 
 直接通过metamask切换账号，切换后刷新即可
 
-![image-20251108232645836](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232645836.png)
+![image-20251108232645836](.\images\image-20251108232645836.png)
 
 ## 操作流程
 
@@ -118,11 +118,11 @@ npx hardhat node
 npx hardhat run scripts/deploy.ts --network localhost
 ```
 
-![image-20251108232956179](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108232956179.png)
+![image-20251108232956179](.\images\image-20251108232956179.png)
 
 将第二条命令得到的address设置到frontend/src/contracts/addresses.ts
 
-![image-20251108233048099](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108233048099.png)
+![image-20251108233048099](.\images\image-20251108233048099.png)
 
 将第一条命令得到的需要用到的地址设置到`MetaMask`当中，其中第一条地址是合约拥有者地址，设置网络为`localhost:8545`
 
@@ -132,7 +132,7 @@ npx hardhat run scripts/deploy.ts --network localhost
 npm start
 ```
 
-![image-20251108233402429](D:\ZJU4_up\区块链\Proj2\ZJU-blockchain-course-2025-main\ZJU-blockchain-course-2025-main\images\image-20251108233402429.png)
+![image-20251108233402429](.\images\image-20251108233402429.png)
 
 界面每一个某块对应各自的功能，我直接把账户信息固定住了，方便查看
 
